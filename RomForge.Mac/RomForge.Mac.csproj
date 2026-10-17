@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+ <PropertyGroup><TargetFramework>net8.0</TargetFramework><Version>1.9.1-mac.1</Version><AssemblyVersion>1.9.1.0</AssemblyVersion><FileVersion>1.9.1.0</FileVersion><PublishTrimmed>false</PublishTrimmed><OutputType>WinExe</OutputType><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable><AssemblyName>RomForge-Mac</AssemblyName></PropertyGroup>
+ <ItemGroup>
+  <Compile Include="../RomForge/ViewModels/**/*.cs" Link="ViewModels/%(RecursiveDir)%(Filename)%(Extension)"/>
+  <ProjectReference Include="../port/InspectorCore/InspectorCore.csproj"/><ProjectReference Include="../RomForge.Core/RomForge.Core.csproj"/>
+  <ProjectReference Include="../Vita.Core/Vita.Core.csproj"/>
+  <ProjectReference Include="../PSP.Core/PSP.Core.csproj"/>
+  <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.3"/>
+  <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.2.3"/>
+  <PackageReference Include="NAudio.Core" Version="2.2.1"/>
+  <Content Include="../RomForge/Assets/**/*" CopyToOutputDirectory="PreserveNewest" Link="compat-assets/RomForge/Assets/%(RecursiveDir)%(Filename)%(Extension)"/>
+ <Content Include="../port/native/osx-arm64/*" CopyToOutputDirectory="PreserveNewest" Link="native/osx-arm64/%(Filename)%(Extension)"/></ItemGroup>
+</Project>

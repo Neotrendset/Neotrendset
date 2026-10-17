@@ -1,0 +1,5 @@
+PASS native application launch
+PASS NCCH inspection: 0004000001234567 / CTR-P-TEST
+PASS native Save panel exports parseable JSON with matching SHA-256
+PASS codesign --verify --deep --strict
+PASS Info.plist validation

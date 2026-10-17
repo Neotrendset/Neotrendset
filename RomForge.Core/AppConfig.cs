@@ -1,0 +1,318 @@
+using Common.WPF.ViewModels;
+using System.ComponentModel;
+using System.IO;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+
+namespace RomForge.Core;
+
+public class CommonConfig : ViewModelBase
+{
+    private double _logBoxHeight = 130;
+    public double LogBoxHeight
+    {
+        get => _logBoxHeight;
+        set { SetProperty(ref _logBoxHeight, value); }
+    }
+
+    private bool _topmost;
+    public bool Topmost
+    {
+        get => _topmost;
+        set { SetProperty(ref _topmost, value); }
+    }
+
+    private bool _autoCheckUpdate = true;
+    public bool AutoCheckUpdate
+    {
+        get => _autoCheckUpdate;
+        set { SetProperty(ref _autoCheckUpdate, value); }
+    }
+
+    private string? _language = "Korean";
+    public string? Language
+    {
+        get => _language;
+        set { SetProperty(ref _language, value); }
+    }
+
+    private bool _isMuted;
+    public bool IsMuted
+    {
+        get => _isMuted;
+        set { SetProperty(ref _isMuted, value); }
+    }
+
+    private string _completeSoundPath = "complete.mp3";
+    public string CompleteSoundPath
+    {
+        get => _completeSoundPath;
+        set { SetProperty(ref _completeSoundPath, value); }
+    }
+
+    private string _cancelSoundPath = "cancel.mp3";
+    public string CancelSoundPath
+    {
+        get => _cancelSoundPath;
+        set { SetProperty(ref _cancelSoundPath, value); }
+    }
+
+    private string _errorSoundPath = "error.mp3";
+    public string ErrorSoundPath
+    {
+        get => _errorSoundPath;
+        set { SetProperty(ref _errorSoundPath, value); }
+    }
+}
+
+public class WindowConfig : ViewModelBase
+{
+    private double _left = 100;
+    public double Left { get => _left; set => SetProperty(ref _left, value); }
+
+    private double _top = 100;
+    public double Top { get => _top; set => SetProperty(ref _top, value); }
+
+    private double _width = 900;
+    public double Width { get => _width; set => SetProperty(ref _width, value); }
+
+    private double _height = 715;
+    public double Height { get => _height; set => SetProperty(ref _height, value); }
+
+    private bool _isMaximized = false;
+    public bool IsMaximized { get => _isMaximized; set => SetProperty(ref _isMaximized, value); }
+}
+
+public class PatchConfig : ViewModelBase
+{
+    private bool _autoCompress;
+    public bool AutoCompress
+    {
+        get => _autoCompress;
+        set { SetProperty(ref _autoCompress, value); }
+    }
+
+    private bool _namingEnabled = true;
+    public bool NamingEnabled
+    {
+        get => _namingEnabled;
+        set { SetProperty(ref _namingEnabled, value); }
+    }
+
+    private string _namingFormat = "{fileName} (v{Version}_{Date:yyMMdd})";
+    public string NamingFormat
+    {
+        get => _namingFormat;
+        set { SetProperty(ref _namingFormat, value); }
+    }
+
+    private bool _useNormalPatchCustomOutputPath;
+    public bool UseNormalPatchCustomOutputPath
+    {
+        get => _useNormalPatchCustomOutputPath;
+        set { SetProperty(ref _useNormalPatchCustomOutputPath, value); }
+    }
+
+    private string? _outputPath;
+    public string? OutputPath
+    {
+        get => _outputPath;
+        set { SetProperty(ref _outputPath, value); }
+    }
+}
+
+public class ChdmanConfig : ViewModelBase
+{
+    private string _compression = "zlib";
+    public string Compression { get => _compression; set => SetProperty(ref _compression, value); }
+}
+
+public class SwitchConfig : ViewModelBase
+{
+    private int _compressLevel = 18;
+    public int CompressLevel { get => _compressLevel; set => SetProperty(ref _compressLevel, value); }
+
+    private bool _verifyCompress = false;
+    public bool VerifyCompress { get => _verifyCompress; set => SetProperty(ref _verifyCompress, value); }
+
+    private bool _useBlockMode = true;
+    public bool UseBlockMode { get => _useBlockMode; set => SetProperty(ref _useBlockMode, value); }
+
+    private bool _useBlocklessMode = false;
+    public bool UseBlocklessMode { get => _useBlocklessMode; set => SetProperty(ref _useBlocklessMode, value); }
+
+    private bool _forceKeyGen0 = false;
+    public bool ForceKeyGen0 { get => _forceKeyGen0; set => SetProperty(ref _forceKeyGen0, value); }
+}
+
+public class AzaharConfig : ViewModelBase
+{
+    private int _compressLevel = 18;
+    public int CompressLevel { get => _compressLevel; set => SetProperty(ref _compressLevel, value); }
+}
+
+public class WiiGCConfig : ViewModelBase
+{
+    private int _compressLevel = 18;
+    public int CompressLevel { get => _compressLevel; set => SetProperty(ref _compressLevel, value); }
+}
+
+public class PS1Config : ViewModelBase
+{
+    private int _compressLevel = 9;
+    public int CompressLevel { get => _compressLevel; set => SetProperty(ref _compressLevel, value); }
+
+    private bool _useGameIdMode = false;
+    public bool UseGameIdMode { get => _useGameIdMode; set => SetProperty(ref _useGameIdMode, value); }
+
+    private bool _useFileNameMode = true;
+    public bool UseFileNameMode { get => _useFileNameMode; set => SetProperty(ref _useFileNameMode, value); }
+
+    private bool _useUpperCase = false;
+    public bool UseUpperCase { get => _useUpperCase; set => SetProperty(ref _useUpperCase, value); }
+
+    private bool _isHighQualityMode = true;
+    public bool IsHighQualityMode { get => _isHighQualityMode; set => SetProperty(ref _isHighQualityMode, value); }
+}
+
+public class TistoryConfig : ViewModelBase
+{
+    private string? _saveDirectory;
+    public string? SaveDirectory { get => _saveDirectory; set => SetProperty(ref _saveDirectory, value); }
+
+    private bool _autoExtractAfterDownload;
+    public bool AutoExtractAfterDownload { get => _autoExtractAfterDownload; set => SetProperty(ref _autoExtractAfterDownload, value); }
+}
+
+public class OutputFoldersConfig : ViewModelBase
+{
+    private string? _switchRepackOutputPath;
+    public string? SwitchRepackOutputPath { get => _switchRepackOutputPath; set => SetProperty(ref _switchRepackOutputPath, value); }
+
+    private string? _switchMergeOutputPath;
+    public string? SwitchMergeOutputPath { get => _switchMergeOutputPath; set => SetProperty(ref _switchMergeOutputPath, value); }
+
+    private string? _wiiURepackOutputPath;
+    public string? WiiURepackOutputPath { get => _wiiURepackOutputPath; set => SetProperty(ref _wiiURepackOutputPath, value); }
+
+    private string? _wiiUConvertOutputPath;
+    public string? WiiUConvertOutputPath { get => _wiiUConvertOutputPath; set => SetProperty(ref _wiiUConvertOutputPath, value); }
+
+    private string? _threeDsRepackOutputPath;
+    public string? ThreeDsRepackOutputPath { get => _threeDsRepackOutputPath; set => SetProperty(ref _threeDsRepackOutputPath, value); }
+
+    private string? _vitaOutputPath;
+    public string? VitaOutputPath { get => _vitaOutputPath; set => SetProperty(ref _vitaOutputPath, value); }
+
+    private bool _useCompressCustomOutputPath;
+    public bool UseCompressCustomOutputPath { get => _useCompressCustomOutputPath; set => SetProperty(ref _useCompressCustomOutputPath, value); }
+
+    private string? _compressOutputPath;
+    public string? CompressOutputPath { get => _compressOutputPath; set => SetProperty(ref _compressOutputPath, value); }
+
+    private bool _useConvertCustomOutputPath;
+    public bool UseConvertCustomOutputPath { get => _useConvertCustomOutputPath; set => SetProperty(ref _useConvertCustomOutputPath, value); }
+
+    private string? _convertOutputPath;
+    public string? ConvertOutputPath { get => _convertOutputPath; set => SetProperty(ref _convertOutputPath, value); }
+
+    private string? _wiiOutputPath;
+    public string? WiiOutputPath { get => _wiiOutputPath; set => SetProperty(ref _wiiOutputPath, value); }
+}
+
+public class AppConfig : ViewModelBase
+{
+    private static readonly string DefaultFilePath = Path.Combine(global::Common.PortablePaths.DataDirectory,"config.json");
+    private static readonly JsonSerializerOptions JsonOptions = new() { WriteIndented = true };
+
+    private static readonly Lazy<AppConfig> _instance = new(() => new AppConfig().LoadInternal());
+    public static AppConfig Instance => _instance.Value;
+
+    private CommonConfig _common = new();
+    public CommonConfig Common { get => _common; set => SetProperty(ref _common, value); }
+
+    private WindowConfig _window = new();
+    public WindowConfig Window { get => _window; set => SetProperty(ref _window, value); }
+
+    private PatchConfig _patch = new();
+    public PatchConfig Patch { get => _patch; set => SetProperty(ref _patch, value); }
+
+    private ChdmanConfig _chdman = new();
+    public ChdmanConfig Chdman { get => _chdman; set => SetProperty(ref _chdman, value); }
+
+    private SwitchConfig _switch = new();
+    public SwitchConfig Switch { get => _switch; set => SetProperty(ref _switch, value); }
+
+    private AzaharConfig _azahar = new();
+    public AzaharConfig Azahar { get => _azahar; set => SetProperty(ref _azahar, value); }
+
+    private WiiGCConfig _wiigc = new();
+    public WiiGCConfig WiiGC { get => _wiigc; set => SetProperty(ref _wiigc, value); }
+
+    private PS1Config _ps1 = new();
+    public PS1Config PS1 { get => _ps1; set => SetProperty(ref _ps1, value); }
+
+    private TistoryConfig _tistory = new();
+    public TistoryConfig Tistory { get => _tistory; set => SetProperty(ref _tistory, value); }
+
+    private OutputFoldersConfig _outputFolders = new();
+    public OutputFoldersConfig OutputFolders { get => _outputFolders; set => SetProperty(ref _outputFolders, value); }
+
+    [JsonConstructor]
+    private AppConfig() { }
+
+    private AppConfig LoadInternal()
+    {
+        if (!File.Exists(DefaultFilePath))
+        {
+            Save();
+            SubscribeToChanges();
+            return this;
+        }
+
+        try
+        {
+            var json = File.ReadAllText(DefaultFilePath);
+            var loaded = JsonSerializer.Deserialize<AppConfig>(json);
+
+            if (loaded != null)
+            {
+                Common = loaded.Common ?? new();
+                Window = loaded.Window ?? new();
+                Patch = loaded.Patch ?? new();
+                Chdman = loaded.Chdman ?? new();
+                Switch = loaded.Switch ?? new();
+                Azahar = loaded.Azahar ?? new();
+                WiiGC = loaded.WiiGC ?? new();
+                PS1 = loaded.PS1 ?? new();
+                Tistory = loaded.Tistory ?? new();
+                OutputFolders = loaded.OutputFolders ?? new();
+            }
+        }
+        catch
+        {
+            Save();
+        }
+
+        SubscribeToChanges();
+        return this;
+    }
+
+    private void SubscribeToChanges()
+    {
+        void AutoSave(object? s, PropertyChangedEventArgs e) => Save();
+
+        Common.PropertyChanged += AutoSave;
+        Window.PropertyChanged += AutoSave;
+        Chdman.PropertyChanged += AutoSave;
+        Switch.PropertyChanged += AutoSave;
+        Azahar.PropertyChanged += AutoSave;
+        WiiGC.PropertyChanged += AutoSave;
+        Patch.PropertyChanged += AutoSave;
+        PS1.PropertyChanged += AutoSave;
+        Tistory.PropertyChanged += AutoSave;
+        OutputFolders.PropertyChanged += AutoSave;
+    }
+
+    public void Save(){Directory.CreateDirectory(Path.GetDirectoryName(DefaultFilePath)!);File.WriteAllText(DefaultFilePath, JsonSerializer.Serialize(this, JsonOptions));}
+}

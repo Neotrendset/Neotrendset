@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <NoWarn>1701;1702;CS8600;CS8604</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <NoWarn>1701;1702;CS8600;CS8604</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    </ItemGroup>
+
+  <ItemGroup>
+    <None Update="7z.dll" Condition="'$(OS)' == 'Windows_NT'">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+     <ExcludeFromSingleFile>false</ExcludeFromSingleFile>    
+</None>
+  </ItemGroup>
+
+<ItemGroup><PackageReference Include="SharpCompress" Version="0.50.0" /></ItemGroup></Project>

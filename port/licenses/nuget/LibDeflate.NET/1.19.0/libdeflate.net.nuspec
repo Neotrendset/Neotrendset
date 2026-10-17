@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>LibDeflate.NET</id>
+    <version>1.19.0</version>
+    <authors>jzebedee</authors>
+    <license type="expression">MIT</license>
+    <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>
+    <projectUrl>https://github.com/jzebedee/LibDeflate</projectUrl>
+    <description>LibDeflate.NET is a managed wrapper around libdeflate, a native library for fast, whole-buffer DEFLATE-based compression and decompression.</description>
+    <tags>libdeflate.net libdeflate deflate zlib gzip gz crc32 crc adler32 adler</tags>
+    <repository type="git" url="https://github.com/jzebedee/LibDeflate.NET" commit="905c127f34c986264f8dfd4a510f9347e7e3d384" />
+    <dependencies>
+      <group targetFramework="net6.0">
+        <dependency id="LibDeflate.Native" version="1.19.0" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="LibDeflate.Native" version="1.19.0" exclude="Build,Analyzers" />
+        <dependency id="System.Memory" version="4.5.3" exclude="Build,Analyzers" />
+        <dependency id="System.Runtime.CompilerServices.Unsafe" version="6.0.0" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>

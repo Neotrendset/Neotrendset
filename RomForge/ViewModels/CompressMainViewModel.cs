@@ -1,0 +1,337 @@
+using _3DS.Core.Services;
+using CD.Core.Services.Readers;
+using CD.Core.Services.Writers;
+using CHD.Core.Services;
+using Common;
+using Common.WPF;
+using Common.WPF.ViewModels;
+using RomForge.Core;
+using RomForge.Core.Models;
+using RomForge.Core.Models.Compression;
+using RomForge.Core.Services;
+using RomForge.Core.Services.Compression;
+using RomForge.Core.Services.Switch;
+using RomForge.Core.UI.Command;
+using System.Collections.ObjectModel;
+using System.IO;
+using System.Windows;
+using System.Windows.Input;
+using WiiGC.Core.Services;
+
+namespace RomForge.ViewModels;
+
+public class CompressMainViewModel : ToolTabViewModel
+{
+    private static readonly HashSet<string> SupportedExtensions = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ".iso", ".cue", ".gdi", ".ccd", ".chd",
+        ".nsp", ".nsz", ".xci", ".xcz",
+        ".gcm", ".wbfs", ".gcz", ".wia", ".rvz",
+        ".3ds", ".cci", ".cia", ".zcci"
+    };
+
+    private CancellationTokenSource _cts = new();
+
+    public ObservableCollection<LogEntry> LogEntries { get; } = [];
+
+    public ObservableCollection<CompressFileItem> FileItems { get; } = [];
+
+    public Visibility HintVisibility => FileItems.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+
+    public ICommand RunCommand { get; }
+
+    public ICommand BrowseOutputCommand { get; }
+
+    public event Action<CompressFileItem>? ScrollToItemRequested;
+
+    public bool UseCustomOutputPath
+    {
+        get => AppConfig.Instance.OutputFolders.UseCompressCustomOutputPath;
+        set
+        {
+            if (value && string.IsNullOrWhiteSpace(AppConfig.Instance.OutputFolders.CompressOutputPath))
+                AppConfig.Instance.OutputFolders.CompressOutputPath = Common.PortablePaths.DataDirectory;
+
+            AppConfig.Instance.OutputFolders.UseCompressCustomOutputPath = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(OutputPath));
+        }
+    }
+
+    public string? OutputPath
+    {
+        get => AppConfig.Instance.OutputFolders.CompressOutputPath;
+        set
+        {
+            AppConfig.Instance.OutputFolders.CompressOutputPath = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public CompressMainViewModel()
+    {
+        RunCommand = new RelayCommand(async _ => await RunAsync(), _ => !IsLocked && FileItems.Count > 0);
+        BrowseOutputCommand = new RelayCommand(_ => BrowseOutput());
+        CancelCommand = new RelayCommand(_ => _cts.Cancel(), _ => IsLocked);
+    }
+
+    public static string GetFileDialogFilter()
+    {
+        string wildcards = string.Join(";", SupportedExtensions.Select(ext => $"*{ext}"));
+
+        return $"지원 파일|{wildcards}|모든 파일|*.*";
+    }
+
+    public void AddPaths(IEnumerable<string> paths)
+    {
+        var existing = FileItems.Select(f => f.FilePath).ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var path in Utils.ExpandPaths(paths))
+        {
+            if (!SupportedExtensions.Contains(Path.GetExtension(path)))
+                continue;
+
+            if (!existing.Add(path))
+                continue;
+
+            var item = new CompressFileItem(path);
+
+            FileItems.Add(item);
+
+            for (int i = 0; i < FileItems.Count; i++)
+                FileItems[i].No = i + 1;
+        }
+
+        OnPropertyChanged(nameof(HintVisibility));
+        CommandManager.InvalidateRequerySuggested();
+    }
+
+    public void RemoveItems(IEnumerable<CompressFileItem> items)
+    {
+        foreach (var item in items.ToList())
+            FileItems.Remove(item);
+
+        for (int i = 0; i < FileItems.Count; i++)
+            FileItems[i].No = i + 1;
+
+        OnPropertyChanged(nameof(HintVisibility));
+    }
+
+    public void ClearItems()
+    {
+        FileItems.Clear();
+        OnPropertyChanged(nameof(HintVisibility));
+    }
+
+    private void BrowseOutput()
+    {
+        var dlg = new Ookii.Dialogs.Wpf.VistaFolderBrowserDialog
+        {
+            Description = "출력 폴더 선택",
+            UseDescriptionForTitle = true
+        };
+
+        if (dlg.ShowDialog() == true)
+            OutputPath = dlg.SelectedPath;
+    }
+
+    private string? ResolveOutputDir()
+    {
+        if (!UseCustomOutputPath || string.IsNullOrWhiteSpace(OutputPath))
+            return null;
+
+        Directory.CreateDirectory(OutputPath);
+
+        return OutputPath;
+    }
+
+    private async Task RunAsync()
+    {
+        _cts.Dispose();
+
+        _cts = new CancellationTokenSource();
+
+        ClearLog();
+
+        string? outputDir = ResolveOutputDir();
+
+        using (BeginWork())
+        {
+            int totalCount = FileItems.Count;
+
+            AppendLog($"총 {totalCount}개의 작업을 시작합니다.", LogLevel.Highlight);
+
+            int cnt = 0;
+
+            foreach (var item in FileItems)
+            {
+                if (_cts.Token.IsCancellationRequested)
+                {
+                    CancelRemainingItems();
+                    break;
+                }
+
+                if (item.Status == "완료" || item.Status == "미지원")
+                    continue;
+
+                try
+                {
+                    item.Status = "대기중";
+                    item.Progress = 0;
+
+                    var detected = FormatDetector.Detect(item.FilePath);
+
+                    item.Status = "변환중";
+
+                    ScrollToItemRequested?.Invoke(item);
+
+                    var progressHandler = new Progress<ProgressInfo>(p =>
+                    {
+                        item.Progress = p.Percent;
+                        MainViewModel.SetTaskbarProgress(item.Progress);
+                    });
+
+                    void logWrapper(string msg, LogLevel level) => AppendLog(msg, level);
+
+                    int switchCompressLevel = AppConfig.Instance.Switch.CompressLevel;
+                    if (switchCompressLevel < 3)
+                        switchCompressLevel = 3;
+
+                    switch (detected.Format)
+                    {
+                        case RomFormat.Nsp:
+                            await NspCompressService.CompressAsync(item.FilePath, AppConfig.Instance.Switch.CompressLevel, AppConfig.Instance.Switch.VerifyCompress, AppConfig.Instance.Switch.UseBlockMode, progressHandler, AppendLog, outputDir, _cts.Token);
+                            break;
+                        case RomFormat.Xci:
+                            await XciCompressService.CompressAsync(item.FilePath, AppConfig.Instance.Switch.CompressLevel, AppConfig.Instance.Switch.VerifyCompress, AppConfig.Instance.Switch.UseBlockMode, progressHandler, AppendLog, outputDir, _cts.Token);
+                            break;
+                        case RomFormat.Nsz:
+                            await NspCompressService.DecompressAsync(item.FilePath, progressHandler, AppendLog, outputDir, _cts.Token);
+                            break;
+                        case RomFormat.Xcz:
+                            await XciCompressService.DecompressAsync(item.FilePath, progressHandler, AppendLog, outputDir, _cts.Token);
+                            break;
+                        case RomFormat.Cci:
+                            await Z3dsCompressor.CompressAsync(item.FilePath, AppConfig.Instance.Azahar.CompressLevel, progressHandler, logWrapper, outputDir, _cts.Token);
+                            break;
+                        case RomFormat.Cia:
+                            await Z3dsCompressor.CompressFromCiaAsync(item.FilePath, AppConfig.Instance.Azahar.CompressLevel, progressHandler, logWrapper, outputDir, _cts.Token);
+                            break;
+                        case RomFormat.ZCci:
+                            await Z3dsDecompressor.DecompressAsync(item.FilePath, progressHandler, logWrapper, outputDir, _cts.Token);
+                            break;
+                        case RomFormat.Ccd:
+                            {
+                                AppendLog($"[{item.FileName}] CCD → BIN+CUE 변환 중...", LogLevel.Info);
+
+                                var discReader = DiscImageReaderFactory.Resolve(item.FilePath);
+                                var discImage = discReader.Read(item.FilePath);
+                                var tempCuePath = await BinCueWriter.WriteAsync(discImage, outputDir ?? item.Directory, item.FileName, progressHandler, _cts.Token);
+                                var tempBinPath = Path.ChangeExtension(tempCuePath, ".bin");
+
+                                try
+                                {
+                                    AppendLog($"[{item.FileName}] BIN+CUE → CHD 압축 중...", LogLevel.Info);
+
+                                    FileConverter chdFromCcd = new(AppConfig.Instance.Chdman.Compression);
+
+                                    chdFromCcd.LogMessage += (_, e) => AppendLog(e.Message, e.Level);
+
+                                    var chdFromCcdResult = await chdFromCcd.ConvertFileAsync(tempCuePath, outputDir, progressHandler, null, _cts.Token);
+
+                                    if (!chdFromCcdResult.Success)
+                                        throw new InvalidOperationException(chdFromCcdResult.Message);
+                                }
+                                finally
+                                {
+                                    if (File.Exists(tempCuePath))
+                                        File.Delete(tempCuePath);
+
+                                    if (File.Exists(tempBinPath))
+                                        File.Delete(tempBinPath);
+                                }
+                            }
+                            break;
+                        case RomFormat.Iso:
+                        case RomFormat.Cue:
+                        case RomFormat.Gdi:
+                        case RomFormat.Chd:
+                            {
+                                FileConverter chdConverter = new(AppConfig.Instance.Chdman.Compression);
+
+                                chdConverter.LogMessage += (_, e) => AppendLog(e.Message, e.Level);
+
+                                var chdResult = await chdConverter.ConvertFileAsync(item.FilePath, outputDir, progressHandler, null, _cts.Token);
+
+                                if (!chdResult.Success)
+                                    throw new InvalidOperationException(chdResult.Message);
+                            }
+                            break;
+                        case RomFormat.Rvz:
+                        case RomFormat.Wii:
+                        case RomFormat.Gcm:
+                        case RomFormat.Gcz:
+                        case RomFormat.Wbfs:
+                        case RomFormat.Wia:
+                            {
+                                DiscImageConverter converter = new();
+
+                                converter.LogMessage += (_, e) => AppendLog(e.Message, e.Level);
+                                converter.ProgressChanged += (s, e) => Application.Current.Dispatcher.Invoke(() => item.Progress = e.Progress);
+
+                                await converter.ConvertFileAsync(item.FilePath, detected.Format.ToString(), detected.OutputExtension, AppConfig.Instance.WiiGC.CompressLevel, outputDir, _cts.Token);
+                            }
+                            break;
+                        case RomFormat.Unknown:
+                        default:
+                            item.Status = "미지원";
+
+                            AppendLog($"[{item.FileName}] 지원하지 않는 포맷", LogLevel.Error);
+                            continue;
+                    }
+
+                    item.Progress = 100;
+                    item.Status = "완료";                    
+                    cnt++;
+                }
+                catch (OperationCanceledException)
+                {
+                    AppendLog("작업이 취소되었습니다.", LogLevel.Error);
+                    await SoundPlayer.PlayCancelAsync();
+                    CancelRemainingItems();
+
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    AppendLog($"오류 ([{item.FileName}]): {ex.Message}", LogLevel.Error);
+                    await SoundPlayer.PlayErrorAsync();
+                    MainViewModel.SetTaskbarProgress(100, System.Windows.Shell.TaskbarItemProgressState.Error);                    
+                    item.Status = "실패";
+                }
+            }
+
+            if (cnt > 0)
+            {
+                AppendLog($"총 {cnt}개의 작업을 성공적으로 완료했습니다.", LogLevel.Ok);
+                await SoundPlayer.PlayCompleteAsync();
+                MainViewModel.SetTaskbarProgress(100);
+            }
+            else
+                AppendLog("성공한 작업이 없습니다.", LogLevel.Error);
+        }
+    }
+
+    private void CancelRemainingItems()
+    {
+        foreach (var remainingItem in FileItems.Where(i => i.Status == "대기중" || i.Status == "변환중"))
+        {
+            remainingItem.Status = "취소";
+            remainingItem.Progress = 0;
+        }
+    }
+
+    private void AppendLog(string msg, LogLevel level = LogLevel.Info, string titleId = "") => Application.Current.Dispatcher.Invoke(() => LogEntries.Add(new LogEntry { Message = msg, Level = level }));
+
+    private void ClearLog() => Application.Current.Dispatcher.Invoke(() => LogEntries.Clear());
+}

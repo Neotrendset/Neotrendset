@@ -1,0 +1,49 @@
+# Visual Studio 캐시 및 설정
+.vs/
+[Dd]ebug/
+[Rr]elease/
+bin/
+binary/
+obj/
+site/
+__pycache__/
+
+*.pyc
+.venv/
+
+*.user
+*.suo
+
+# 보안 키 파일
+prod.keys
+aes_keys.txt
+keys.txt
+seeddb.bin
+certs.bin
+boot9.bin
+custom-install-finalize.3dsx
+base.pbp
+BASE.zip
+ICON0.png
+PIC0.png
+PIC1.png
+DATA.psp
+DATA1.bin
+DATA2.bin
+DATA3.bin
+GamesDB.zip
+Config.zip
+KEYS.bin
+# 기타 로그
+*.log
+# macOS build output and local credentials
+artifacts/
+.DS_Store
+.env
+.env.*
+title.keys
+movable.sed
+
+# Required upstream embedded resources
+!PBP.Core/GamesDB.zip
+!PBP.Core/Resources/BASE.zip

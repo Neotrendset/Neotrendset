@@ -1,0 +1,62 @@
+[
+  {
+    "path": "3DS.Core/Resources/custom-install-finalize.3dsx",
+    "bytes": 198088,
+    "sha256": "a83dec63965040118d96d3eb593c915afeded2c769b0e0a6c3bd0f4e7d603545"
+  },
+  {
+    "path": "PBP.Core/BLANK.PNG",
+    "bytes": 636,
+    "sha256": "3d5c8d63400c6f9514010a019d051dc1a25ae43f8847ffa763e7dffa8877d2de"
+  },
+  {
+    "path": "PBP.Core/BASE.zip",
+    "bytes": 59321,
+    "sha256": "ddbec04707e6a45c57f22f25aa947212fcdc5f94726a5efc86438b61648d13d9"
+  },
+  {
+    "path": "PBP.Core/DATA.psp",
+    "bytes": 19002,
+    "sha256": "9a995e281433c6671e8fc9efc16a130f865e5db03e2d5e6cfbba29ab34ec2fb8"
+  },
+  {
+    "path": "PBP.Core/PIC0.png",
+    "bytes": 346,
+    "sha256": "350e8df7dbde5f43ee2200e63b998269bfea8805df3f8fc14b644ae40bae8032"
+  },
+  {
+    "path": "PBP.Core/ICON0.png",
+    "bytes": 7032,
+    "sha256": "d226b5bdd1af4e765985999d7688a40c5ed12c157ed5d72cd4737b90791db2e0"
+  },
+  {
+    "path": "PBP.Core/PIC1.png",
+    "bytes": 2651,
+    "sha256": "3350f606604ed7153a9b60b45c3483738cb45c3ef1a30a730116c0923d6d68f1"
+  },
+  {
+    "path": "PBP.Core/Config.zip",
+    "bytes": 187016,
+    "sha256": "693cfe81d17d099e1f68f92b2c1cf9c7e21ed9f61e40618a75cf6363ec9ac7b1"
+  },
+  {
+    "path": "PBP.Core/GamesDB.zip",
+    "bytes": 3086534,
+    "sha256": "d03576c762505bd9650e87b63dc2558714dfe47f97daeda47da56d86f91b65c5"
+  },
+  {
+    "path": "PBP.Core/DATA1.bin",
+    "bytes": 3616,
+    "sha256": "41d5ed34c4e269e3548395b4d77de60bbbeede04ea1bd198fd5e0d2cb0734cce"
+  },
+  {
+    "path": "PBP.Core/DATA3.bin",
+    "bytes": 128,
+    "sha256": "70c0b99a16396068390533fa061a52493396596dca414a89a45cef8f63fb56b7"
+  },
+  {
+    "path": "PBP.Core/DATA2.bin",
+    "bytes": 11740,
+    "sha256": "69385dc16e8f7b17777132192bf9a0a2742b115f589cd8fa08241c43be8ad048"
+  }
+]

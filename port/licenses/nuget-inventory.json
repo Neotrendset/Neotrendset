@@ -1,0 +1,332 @@
+[
+  {
+    "name": "Avalonia",
+    "version": "11.2.3",
+    "nuget": "https://www.nuget.org/packages/Avalonia/11.2.3",
+    "license": "MIT",
+    "licenseType": "expression"
+  },
+  {
+    "name": "Avalonia.Angle.Windows.Natives",
+    "version": "2.1.22045.20230930",
+    "nuget": "https://www.nuget.org/packages/Avalonia.Angle.Windows.Natives/2.1.22045.20230930",
+    "license": "LICENSE",
+    "licenseType": "file"
+  },
+  {
+    "name": "Avalonia.BuildServices",
+    "version": "0.0.29",
+    "nuget": "https://www.nuget.org/packages/Avalonia.BuildServices/0.0.29"
+  },
+  {
+    "name": "Avalonia.Controls.DataGrid",
+    "version": "11.2.3",
+    "nuget": "https://www.nuget.org/packages/Avalonia.Controls.DataGrid/11.2.3",
+    "license": "MIT",
+    "licenseType": "expression"
+  },
+  {
+    "name": "Avalonia.Desktop",
+    "version": "11.2.3",
+    "nuget": "https://www.nuget.org/packages/Avalonia.Desktop/11.2.3",
+    "license": "MIT",
+    "licenseType": "expression"
+  },
+  {
+    "name": "Avalonia.FreeDesktop",
+    "version": "11.2.3",
+    "nuget": "https://www.nuget.org/packages/Avalonia.FreeDesktop/11.2.3",
+    "license": "MIT",
+    "licenseType": "expression"
+  },
+  {
+    "name": "Avalonia.Native",
+    "version": "11.2.3",
+    "nuget": "https://www.nuget.org/packages/Avalonia.Native/11.2.3",
+    "license": "MIT",
+    "licenseType": "expression"
+  },
+  {
+    "name": "Avalonia.Remote.Protocol",
+    "version": "11.2.3",
+    "nuget": "https://www.nuget.org/packages/Avalonia.Remote.Protocol/11.2.3",
+    "license": "MIT",
+    "licenseType": "expression"
+  },
+  {
+    "name": "Avalonia.Skia",
+    "version": "11.2.3",
+    "nuget": "https://www.nuget.org/packages/Avalonia.Skia/11.2.3",
+    "license": "MIT",
+    "licenseType": "expression"
+  },
+  {
+    "name": "Avalonia.Themes.Fluent",
+    "version": "11.2.3",
+    "nuget": "https://www.nuget.org/packages/Avalonia.Themes.Fluent/11.2.3",
+    "license": "MIT",
+    "licenseType": "expression"
+  },
+  {
+    "name": "Avalonia.Win32",
+    "version": "11.2.3",
+    "nuget": "https://www.nuget.org/packages/Avalonia.Win32/11.2.3",
+    "license": "MIT",
+    "licenseType": "expression"
+  },
+  {
+    "name": "Avalonia.X11",
+    "version": "11.2.3",
+    "nuget": "https://www.nuget.org/packages/Avalonia.X11/11.2.3",
+    "license": "MIT",
+    "licenseType": "expression"
+  },
+  {
+    "name": "Blake3",
+    "version": "2.2.1",
+    "nuget": "https://www.nuget.org/packages/Blake3/2.2.1",
+    "license": "BSD-2-Clause",
+    "licenseType": "expression"
+  },
+  {
+    "name": "DotNetZip",
+    "version": "1.16.0",
+    "nuget": "https://www.nuget.org/packages/DotNetZip/1.16.0"
+  },
+  {
+    "name": "HarfBuzzSharp",
+    "version": "7.3.0.3",
+    "nuget": "https://www.nuget.org/packages/HarfBuzzSharp/7.3.0.3",
+    "license": "MIT",
+    "licenseType": "expression"
+  },
+  {
+    "name": "HarfBuzzSharp.NativeAssets.Linux",
+    "version": "7.3.0.3",
+    "nuget": "https://www.nuget.org/packages/HarfBuzzSharp.NativeAssets.Linux/7.3.0.3",
+    "license": "MIT",
+    "licenseType": "expression"
+  },
+  {
+    "name": "HarfBuzzSharp.NativeAssets.macOS",
+    "version": "7.3.0.3",
+    "nuget": "https://www.nuget.org/packages/HarfBuzzSharp.NativeAssets.macOS/7.3.0.3",
+    "license": "MIT",
+    "licenseType": "expression"
+  },
+  {
+    "name": "HarfBuzzSharp.NativeAssets.WebAssembly",
+    "version": "7.3.0.3",
+    "nuget": "https://www.nuget.org/packages/HarfBuzzSharp.NativeAssets.WebAssembly/7.3.0.3",
+    "license": "MIT",
+    "licenseType": "expression"
+  },
+  {
+    "name": "HarfBuzzSharp.NativeAssets.Win32",
+    "version": "7.3.0.3",
+    "nuget": "https://www.nuget.org/packages/HarfBuzzSharp.NativeAssets.Win32/7.3.0.3",
+    "license": "MIT",
+    "licenseType": "expression"
+  },
+  {
+    "name": "HtmlAgilityPack",
+    "version": "1.12.4",
+    "nuget": "https://www.nuget.org/packages/HtmlAgilityPack/1.12.4",
+    "license": "MIT",
+    "licenseType": "expression"
+  },
+  {
+    "name": "JetBrains.Annotations",
+    "version": "2025.2.4",
+    "nuget": "https://www.nuget.org/packages/JetBrains.Annotations/2025.2.4",
+    "license": "MIT",
+    "licenseType": "expression"
+  },
+  {
+    "name": "K4os.Compression.LZ4",
+    "version": "1.3.8",
+    "nuget": "https://www.nuget.org/packages/K4os.Compression.LZ4/1.3.8"
+  },
+  {
+    "name": "LibDeflate.Native",
+    "version": "1.19.0",
+    "nuget": "https://www.nuget.org/packages/LibDeflate.Native/1.19.0",
+    "license": "MIT",
+    "licenseType": "expression"
+  },
+  {
+    "name": "LibDeflate.NET",
+    "version": "1.19.0",
+    "nuget": "https://www.nuget.org/packages/LibDeflate.NET/1.19.0",
+    "license": "MIT",
+    "licenseType": "expression"
+  },
+  {
+    "name": "MicroCom.Runtime",
+    "version": "0.11.0",
+    "nuget": "https://www.nuget.org/packages/MicroCom.Runtime/0.11.0",
+    "license": "MIT",
+    "licenseType": "expression"
+  },
+  {
+    "name": "Microsoft.NETCore.Platforms",
+    "version": "3.1.1",
+    "nuget": "https://www.nuget.org/packages/Microsoft.NETCore.Platforms/3.1.1",
+    "license": "MIT",
+    "licenseType": "expression"
+  },
+  {
+    "name": "Microsoft.Win32.SystemEvents",
+    "version": "4.7.0",
+    "nuget": "https://www.nuget.org/packages/Microsoft.Win32.SystemEvents/4.7.0",
+    "license": "MIT",
+    "licenseType": "expression"
+  },
+  {
+    "name": "NAudio.Core",
+    "version": "2.2.1",
+    "nuget": "https://www.nuget.org/packages/NAudio.Core/2.2.1",
+    "license": "MIT",
+    "licenseType": "expression"
+  },
+  {
+    "name": "NLayer",
+    "version": "3.0.0",
+    "nuget": "https://www.nuget.org/packages/NLayer/3.0.0",
+    "license": "MIT",
+    "licenseType": "expression"
+  },
+  {
+    "name": "SharpCompress",
+    "version": "0.50.0",
+    "nuget": "https://www.nuget.org/packages/SharpCompress/0.50.0",
+    "license": "MIT",
+    "licenseType": "expression"
+  },
+  {
+    "name": "SharpZipLib",
+    "version": "1.4.2",
+    "nuget": "https://www.nuget.org/packages/SharpZipLib/1.4.2",
+    "license": "MIT",
+    "licenseType": "expression"
+  },
+  {
+    "name": "SkiaSharp",
+    "version": "2.88.9",
+    "nuget": "https://www.nuget.org/packages/SkiaSharp/2.88.9",
+    "license": "MIT",
+    "licenseType": "expression"
+  },
+  {
+    "name": "SkiaSharp.NativeAssets.Linux",
+    "version": "2.88.9",
+    "nuget": "https://www.nuget.org/packages/SkiaSharp.NativeAssets.Linux/2.88.9",
+    "license": "MIT",
+    "licenseType": "expression"
+  },
+  {
+    "name": "SkiaSharp.NativeAssets.macOS",
+    "version": "2.88.9",
+    "nuget": "https://www.nuget.org/packages/SkiaSharp.NativeAssets.macOS/2.88.9",
+    "license": "MIT",
+    "licenseType": "expression"
+  },
+  {
+    "name": "SkiaSharp.NativeAssets.WebAssembly",
+    "version": "2.88.9",
+    "nuget": "https://www.nuget.org/packages/SkiaSharp.NativeAssets.WebAssembly/2.88.9",
+    "license": "MIT",
+    "licenseType": "expression"
+  },
+  {
+    "name": "SkiaSharp.NativeAssets.Win32",
+    "version": "2.88.9",
+    "nuget": "https://www.nuget.org/packages/SkiaSharp.NativeAssets.Win32/2.88.9",
+    "license": "MIT",
+    "licenseType": "expression"
+  },
+  {
+    "name": "System.CodeDom",
+    "version": "10.0.12",
+    "nuget": "https://www.nuget.org/packages/System.CodeDom/10.0.12",
+    "license": "MIT",
+    "licenseType": "expression"
+  },
+  {
+    "name": "System.Drawing.Common",
+    "version": "4.7.0",
+    "nuget": "https://www.nuget.org/packages/System.Drawing.Common/4.7.0",
+    "license": "MIT",
+    "licenseType": "expression"
+  },
+  {
+    "name": "System.IO.Hashing",
+    "version": "10.0.12",
+    "nuget": "https://www.nuget.org/packages/System.IO.Hashing/10.0.12",
+    "license": "MIT",
+    "licenseType": "expression"
+  },
+  {
+    "name": "System.IO.Pipelines",
+    "version": "10.0.12",
+    "nuget": "https://www.nuget.org/packages/System.IO.Pipelines/10.0.12",
+    "license": "MIT",
+    "licenseType": "expression"
+  },
+  {
+    "name": "System.Management",
+    "version": "10.0.12",
+    "nuget": "https://www.nuget.org/packages/System.Management/10.0.12",
+    "license": "MIT",
+    "licenseType": "expression"
+  },
+  {
+    "name": "System.Security.AccessControl",
+    "version": "4.7.0",
+    "nuget": "https://www.nuget.org/packages/System.Security.AccessControl/4.7.0",
+    "license": "MIT",
+    "licenseType": "expression"
+  },
+  {
+    "name": "System.Security.Permissions",
+    "version": "4.7.0",
+    "nuget": "https://www.nuget.org/packages/System.Security.Permissions/4.7.0",
+    "license": "MIT",
+    "licenseType": "expression"
+  },
+  {
+    "name": "System.Security.Principal.Windows",
+    "version": "4.7.0",
+    "nuget": "https://www.nuget.org/packages/System.Security.Principal.Windows/4.7.0",
+    "license": "MIT",
+    "licenseType": "expression"
+  },
+  {
+    "name": "System.Text.Encoding.CodePages",
+    "version": "4.7.1",
+    "nuget": "https://www.nuget.org/packages/System.Text.Encoding.CodePages/4.7.1",
+    "license": "MIT",
+    "licenseType": "expression"
+  },
+  {
+    "name": "System.Windows.Extensions",
+    "version": "4.7.0",
+    "nuget": "https://www.nuget.org/packages/System.Windows.Extensions/4.7.0",
+    "license": "MIT",
+    "licenseType": "expression"
+  },
+  {
+    "name": "Tmds.DBus.Protocol",
+    "version": "0.20.0",
+    "nuget": "https://www.nuget.org/packages/Tmds.DBus.Protocol/0.20.0",
+    "license": "MIT",
+    "licenseType": "expression"
+  },
+  {
+    "name": "ZstdSharp.Port",
+    "version": "0.8.8",
+    "nuget": "https://www.nuget.org/packages/ZstdSharp.Port/0.8.8",
+    "license": "MIT",
+    "licenseType": "expression"
+  }
+]

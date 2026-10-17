@@ -1,0 +1,55 @@
+PASS native MacWindow + upstream MainViewModel initialization
+Workflow pages: 31
+PASS page 패치 › 일반: 7 actions
+PASS page 패치 › 아케이드: 5 actions
+PASS page 패치 › Vita: 12 actions
+PASS page 패치 › PC-98: 4 actions
+PASS page 압축 / 해제: 6 actions
+PASS page 디스크 형식 변환: 6 actions
+PASS page Switch › 리팩: 13 actions
+PASS page Switch › 병합 / 분리: 12 actions
+PASS page Switch › 형식 변환: 5 actions
+PASS page Switch › 새턴 → NSP: 5 actions
+PASS page Switch › 버전 요구 변경: 10 actions
+PASS page Wii U › 리팩: 8 actions
+PASS page Wii U › 형식 변환: 6 actions
+PASS page Wii › 리팩: 8 actions
+PASS page 3DS › 리팩: 8 actions
+PASS page 3DS › SD 설치 / 추출: 9 actions
+PASS page 3DS › 형식 변환: 5 actions
+PASS page 3DS › 복호화: 5 actions
+PASS page PS / PSP › PBP 패킹: 18 actions
+PASS page PS / PSP › PBP 언팩: 5 actions
+PASS page PS / PSP › CSO / ZSO 변환: 5 actions
+PASS page 유틸리티 › 해시 계산: 5 actions
+PASS page 유틸리티 › 티스토리 첨부파일: 6 actions
+PASS page 유틸리티 › 디스크 이미지: 5 actions
+PASS page 유틸리티 › CIA 인증서 추출: 5 actions
+PASS page 유틸리티 › CUE 도구: 5 actions
+PASS page 설정 › 일반: 3 actions
+PASS page 설정 › 패치: 1 actions
+PASS page 설정 › 압축: 0 actions
+PASS page 설정 › PS / PSP: 0 actions
+PASS page 3DS › Container Inspector: 3 actions
+PASS all workflow forms materialized
+PASS GUI input binding, Inspector execution and JSON export button state
+PASS GUI patch RunCommand uses upstream parent orchestration and writes expected bytes
+PASS Darwin arm64 ioctl bridge uses correct variadic ABI on synthetic pipe
+PASS IPS patch uses upstream UniversalPatcher
+PASS native xdelta3 encode/decode roundtrip
+PASS native BLAKE3 standard empty digest
+PASS 7z compatibility reader extracts ZIP entries and matches bytes
+PASS encrypted solid 7z reads multiple entries with managed decoder
+PASS PSP ISO → CSO → ISO roundtrip uses native libdeflate
+PASS PSP ISO → ZSO → ISO LZ4 roundtrip
+PASS 3DS ExeFS pack/unpack validates stored SHA-256
+PASS 3DS RomFS folder pack/unpack preserves nested UTF-8 names and data
+PASS 3DS NCSD → ZCCI → NCSD roundtrip
+PASS GameCube ISO → RVZ → ISO roundtrip
+PASS CHD native creation, libchdr read and extraction roundtrip
+PASS Switch PFS0 builder writes table and payload with correct alignment
+PASS Wii U WUA archive write/read preserves payload
+PASS PS/Vita PARAM.SFO metadata interoperability
+PASS PBP pack/unpack uses recovered official base resources
+PASS Portable raster image PNG roundtrip and resize
+PASS 18 engine checks

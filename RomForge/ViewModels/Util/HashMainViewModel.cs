@@ -1,0 +1,480 @@
+﻿using Common;
+using Common.WPF.ViewModels;
+using RomForge.Core.Models;
+using RomForge.Core.Models.Util;
+using RomForge.Core.Services;
+using RomForge.Core.UI.Command;
+using System.Collections.Concurrent;
+using System.Collections.ObjectModel;
+using System.IO;
+using System.Security.Cryptography;
+using System.Text;
+using System.Windows;
+using System.Windows.Input;
+using System.Windows.Shell;
+using System.Windows.Threading;
+
+namespace RomForge.ViewModels.Util;
+
+public class HashMainViewModel : ToolTabViewModel
+{
+    #region Fields
+
+    private bool _isConverting;
+    private HashAlgorithmType _selectedAlgorithm = HashAlgorithmType.MD5;
+    private CancellationTokenSource _cts = new();
+    private HashFileItem? _pendingScrollItem;
+    private readonly ConcurrentQueue<Action> _uiQueue = new();
+    private int _flushScheduled;
+
+    private bool _useUpperCase = false;
+
+    public bool UseUpperCase
+    {
+        get => _useUpperCase;
+        set
+        {
+            if (_useUpperCase == value)
+                return;
+
+            _useUpperCase = value;
+
+            OnPropertyChanged();
+            ApplyHashCase();
+        }
+    }
+
+    #endregion
+
+    #region Collections
+
+    public ObservableCollection<LogEntry> LogEntries { get; } = [];
+    public ObservableCollection<HashFileItem> FileItems { get; } = [];
+
+    #endregion
+
+    #region Properties
+
+    public bool IsConverting
+    {
+        get => _isConverting;
+        set
+        {
+            _isConverting = value;
+
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(IsLocked));
+            CommandManager.InvalidateRequerySuggested();
+        }
+    }
+
+    public HashAlgorithmType SelectedAlgorithm
+    {
+        get => _selectedAlgorithm;
+        set { _selectedAlgorithm = value; OnPropertyChanged(); }
+    }
+
+    public Visibility HintVisibility => FileItems.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+
+    #endregion
+
+    #region Commands
+
+    public ICommand RunCommand { get; }
+
+    #endregion
+
+    public event Action<HashFileItem>? ScrollToItemRequested;
+
+    #region Constructor
+
+    public HashMainViewModel()
+    {
+        RunCommand = new RelayCommand(async _ => await RunAsync(), _ => !IsConverting && FileItems.Count > 0);
+        CancelCommand = new RelayCommand(_ => _cts.Cancel(), _ => IsConverting);
+    }
+
+    #endregion
+
+    #region Public Methods
+
+    public async Task AddPaths(IEnumerable<string> paths)
+    {
+        var existing = FileItems.Select(f => f.FilePath).ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var path in Common.Utils.ExpandPaths(paths))
+        {
+            if (!existing.Add(path))
+                continue;
+
+            var vm = new HashFileItem(path);
+
+            FileItems.Add(vm);
+
+            for (int i = 0; i < FileItems.Count; i++)
+                FileItems[i].No = i + 1;
+        }
+
+        OnPropertyChanged(nameof(HintVisibility));
+        CommandManager.InvalidateRequerySuggested();
+    }
+
+    public void RemoveItems(IEnumerable<HashFileItem> items)
+    {
+        foreach (var item in items.ToList())
+            FileItems.Remove(item);
+
+        for (int i = 0; i < FileItems.Count; i++)
+            FileItems[i].No = i + 1;
+
+        OnPropertyChanged(nameof(HintVisibility));
+    }
+
+    public void ClearItems()
+    {
+        FileItems.Clear();
+        OnPropertyChanged(nameof(HintVisibility));
+    }
+
+    public static string GetFileDialogFilter() => "모든 파일|*.*";
+
+    #endregion
+
+    #region Private Methods
+
+    private async Task RunAsync()
+    {
+        IsConverting = true;
+
+        _cts.Dispose();
+
+        _cts = new CancellationTokenSource();
+
+        ClearLog();
+
+        var algoType = SelectedAlgorithm;
+
+        AppendLog($"총 {FileItems.Count}개의 파일 해시 계산을 시작합니다. (알고리즘: {algoType})", LogLevel.Highlight);
+
+        using (BeginWork())
+        {
+            try
+            {
+                int successCount = 0;
+                var token = _cts.Token;
+
+                await Parallel.ForEachAsync(FileItems, new ParallelOptions { MaxDegreeOfParallelism = 4, CancellationToken = token }, async (item, ct) =>
+                {
+                    item.RawHash = string.Empty;
+
+                    PostUi(() =>
+                    {
+                        item.Status = "변환중";
+                        item.Progress = 0;
+                        MainViewModel.SetTaskbarProgress(0);
+                        item.HashResult = string.Empty;
+                    });
+
+                    RequestScroll(item);
+
+                    ct.ThrowIfCancellationRequested();
+
+                    string result = await Task.Run(() => ComputeHash(item, algoType, ct), ct);
+
+                    ct.ThrowIfCancellationRequested();
+
+                    if (!string.IsNullOrEmpty(result))
+                    {
+                        item.RawHash = result;
+
+                        string formatted = FormatHex(result);
+
+                        PostUi(() =>
+                        {
+                            item.HashResult = formatted;
+                            item.Progress = 100;
+                            MainViewModel.SetTaskbarProgress(100);
+                            item.Status = "완료";
+                        });
+
+                        Interlocked.Increment(ref successCount);
+
+                        AppendLog($"[완료] {item.FileName} -> {result}");
+                    }
+                    else
+                    {
+                        PostUi(() => item.Status = "실패");
+
+                        AppendLog($"[실패] {item.FileName} 해시 계산 오류", LogLevel.Error);
+                        MainViewModel.SetTaskbarProgress(100, TaskbarItemProgressState.Error);
+                    }
+                });
+
+                FlushUiQueue();
+
+                AppendLog($"작업 완료 (성공: {successCount} / 전체: {FileItems.Count})", LogLevel.Highlight);
+                await SoundPlayer.PlayCompleteAsync();
+                MainViewModel.SetTaskbarProgress(100);
+            }
+            catch (OperationCanceledException)
+            {
+                FlushUiQueue();
+                AppendLog("작업이 취소되었습니다.", LogLevel.Error);
+                await SoundPlayer.PlayCancelAsync();
+                MainViewModel.SetTaskbarProgress(0);
+
+                foreach (var item in FileItems.Where(i => i.Status == "변환중" || i.Status == "대기중"))
+                {
+                    item.Status = "취소";
+                    item.Progress = 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                FlushUiQueue();
+                AppendLog($"오류 발생: {ex.Message}", LogLevel.Error);
+                await SoundPlayer.PlayErrorAsync();
+                MainViewModel.SetTaskbarProgress(100, TaskbarItemProgressState.Error);
+            }
+            finally
+            {
+                IsConverting = false;
+
+                CommandManager.InvalidateRequerySuggested();
+            }
+        }
+    }
+
+    private string ComputeHash(HashFileItem item, HashAlgorithmType algoType, CancellationToken ct = default)
+    {
+        try
+        {
+            if (!File.Exists(item.FilePath))
+                return string.Empty;
+
+            using var fs = new FileStream(item.FilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            long totalBytes = fs.Length;
+
+            if (algoType == HashAlgorithmType.CRC32)
+            {
+                var crc = new System.IO.Hashing.Crc32();
+
+                return ProcessNonCryptoStream(fs, totalBytes, item, (buf, len) => crc.Append(new ReadOnlySpan<byte>(buf, 0, len)), () =>
+                {
+                    byte[] hashBytes = crc.GetHashAndReset();
+                    uint crcValue = System.Buffers.Binary.BinaryPrimitives.ReadUInt32LittleEndian(hashBytes);
+
+                    return crcValue.ToString("x8");
+                }, ct);
+            }
+
+            if (algoType == HashAlgorithmType.BLAKE3)
+            {
+                using var hasher = Blake3.Hasher.New();
+
+                return ProcessNonCryptoStream(fs, totalBytes, item, (buf, len) => hasher.Update(new ReadOnlySpan<byte>(buf, 0, len)), () =>
+                {
+                    return FormatHex(hasher.Finalize().ToString());
+                }, ct);
+            }
+
+            using var algorithm = CreateHashAlgorithm(algoType);
+
+            if (algorithm == null)
+                return string.Empty;
+
+            byte[] buffer = new byte[1024 * 64];
+            long totalRead = 0;
+            int lastPercent = -1;
+            int read;
+
+            while ((read = fs.Read(buffer, 0, buffer.Length)) > 0)
+            {
+                ct.ThrowIfCancellationRequested();
+
+                totalRead += read;
+
+                if (totalRead == totalBytes)
+                    algorithm.TransformFinalBlock(buffer, 0, read);
+                else
+                    algorithm.TransformBlock(buffer, 0, read, buffer, 0);
+
+                if (totalBytes >= ProgressMinBytes)
+                {
+                    int newProgress = (int)((totalRead * 100) / totalBytes);
+
+                    if (newProgress != lastPercent)
+                    {
+                        lastPercent = newProgress;
+
+                        ReportProgress(item, newProgress);
+                    }
+                }
+            }
+
+            byte[]? cryptoBytes = algorithm.Hash;
+
+            if (cryptoBytes == null)
+                return string.Empty;
+
+            return FormatHex(ConvertToHexString(cryptoBytes));
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch
+        {
+            return string.Empty;
+        }
+    }
+
+    private string ProcessNonCryptoStream(FileStream fs, long totalBytes, HashFileItem item, Action<byte[], int> appendAction, Func<string> finalizeAction, CancellationToken ct = default)
+    {
+        byte[] buffer = new byte[1024 * 64];
+        long totalRead = 0;
+        int lastPercent = -1;
+        int read;
+
+        while ((read = fs.Read(buffer, 0, buffer.Length)) > 0)
+        {
+            ct.ThrowIfCancellationRequested();
+
+            totalRead += read;
+
+            appendAction(buffer, read);
+
+            if (totalBytes >= ProgressMinBytes)
+            {
+                int newProgress = (int)((totalRead * 100) / totalBytes);
+
+                if (newProgress != lastPercent)
+                {
+                    lastPercent = newProgress;
+
+                    ReportProgress(item, newProgress);
+                }
+            }
+        }
+
+        return finalizeAction();
+    }
+
+    private static HashAlgorithm? CreateHashAlgorithm(HashAlgorithmType type)
+    {
+        return type switch
+        {
+            HashAlgorithmType.MD5 => MD5.Create(),
+            HashAlgorithmType.SHA1 => SHA1.Create(),
+            HashAlgorithmType.SHA256 => SHA256.Create(),
+            _ => null
+        };
+    }
+
+    private static string ConvertToHexString(byte[] bytes)
+    {
+        var sb = new StringBuilder(bytes.Length * 2);
+
+        foreach (byte b in bytes)
+            sb.Append(b.ToString("x2"));
+
+        return sb.ToString();
+    }
+
+    private const long ProgressMinBytes = 1024 * 1024;
+
+    private void ReportProgress(HashFileItem item, int percent) => PostUi(() => item.Progress = percent);
+
+    private void PostUi(Action action)
+    {
+        _uiQueue.Enqueue(action);
+
+        ScheduleFlush();
+    }
+
+    private void ScheduleFlush()
+    {
+        if (Interlocked.Exchange(ref _flushScheduled, 1) == 1)
+            return;
+
+        var dispatcher = Application.Current?.Dispatcher;
+
+        if (dispatcher == null)
+        {
+            Interlocked.Exchange(ref _flushScheduled, 0);
+
+            return;
+        }
+
+        dispatcher.BeginInvoke(DispatcherPriority.Background, FlushSlice);
+    }
+
+    private void FlushSlice()
+    {
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+
+        while (stopwatch.ElapsedMilliseconds < 15 && _uiQueue.TryDequeue(out var action))
+            action();
+
+        Interlocked.Exchange(ref _flushScheduled, 0);
+
+        if (!_uiQueue.IsEmpty)
+            ScheduleFlush();
+    }
+
+    private void FlushUiQueue()
+    {
+        while (_uiQueue.TryDequeue(out var action))
+            action();
+    }
+
+    private void RequestScroll(HashFileItem item)
+    {
+        var dispatcher = Application.Current?.Dispatcher;
+
+        if (dispatcher == null)
+            return;
+
+        if (Interlocked.Exchange(ref _pendingScrollItem, item) != null)
+            return;
+
+        dispatcher.BeginInvoke(DispatcherPriority.Background, () =>
+        {
+            var target = Interlocked.Exchange(ref _pendingScrollItem, null);
+
+            if (target != null)
+                ScrollToItemRequested?.Invoke(target);
+        });
+    }
+
+    private void AppendLog(string msg, LogLevel level = LogLevel.Info)
+    {
+        if (Application.Current?.Dispatcher == null)
+            return;
+
+        Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, () => LogEntries.Add(new LogEntry { Message = msg, Level = level }));
+    }
+
+    private void ClearLog()
+    {
+        if (Application.Current?.Dispatcher == null)
+            return;
+
+        Application.Current.Dispatcher.Invoke(() => LogEntries.Clear());
+    }
+
+    private string FormatHex(string hex) => UseUpperCase ? hex.ToUpperInvariant() : hex.ToLowerInvariant();
+
+    private void ApplyHashCase()
+    {
+        foreach (var item in FileItems)
+        {
+            if (string.IsNullOrEmpty(item.RawHash))
+                continue;
+
+            item.HashResult = FormatHex(item.RawHash);
+        }
+    }
+
+    #endregion
+}

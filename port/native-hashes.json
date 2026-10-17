@@ -1,0 +1,112 @@
+[
+  {
+    "name": "libogg.0.8.6.dylib",
+    "bytes": 53792,
+    "sha256": "40457b15cc0475f39b85b2a62a8a56852e15be1bb965fdf024a202dc264e2d6b"
+  },
+  {
+    "name": "libFLAC.14.dylib",
+    "bytes": 257872,
+    "sha256": "cf61a7c25d847690ebd859448aa19c691e0cd354a248f523725b182f7c771040"
+  },
+  {
+    "name": "libromforge.dylib",
+    "bytes": 33472,
+    "sha256": "f7b18995fde83e27a4b559d0955bb31d70ef738a7fd10e8c035706b05181b97a"
+  },
+  {
+    "name": "libutf8proc.3.3.0.dylib",
+    "bytes": 380256,
+    "sha256": "f5dbce0f85f51bd64e693cf432ff5d320bd8f18490ffe11317ddae103daf70b3"
+  },
+  {
+    "name": "libSDL3.0.dylib",
+    "bytes": 2523600,
+    "sha256": "a1f05c595ca049d9fd887654e3218732244ee04cad68d8aa3452405b4efcb2be"
+  },
+  {
+    "name": "chdman",
+    "bytes": 820720,
+    "sha256": "f25c05e8115fc746f54fc642f3c6cbd9520ed046dc38c4b7523d087ef8526f03"
+  },
+  {
+    "name": "libFLAC++.11.dylib",
+    "bytes": 114784,
+    "sha256": "d05339346c8f00a52d051c799c71286dd43e578e0636fb4e12af045ab6bce1e4"
+  },
+  {
+    "name": "liblzma.dylib",
+    "bytes": 166608,
+    "sha256": "f4364d5798e616ea902446ed2d9b50fa0410e05600878227d026d789876f66f9"
+  },
+  {
+    "name": "libogg.dylib",
+    "bytes": 53824,
+    "sha256": "2d4deeedf38b2edd4b06ba9fe98106b079b1d9085fc6d848f60e77a3290b9160"
+  },
+  {
+    "name": "liblzma.5.dylib",
+    "bytes": 166576,
+    "sha256": "ee1d013bf46ebc69f1edc4752b3d2cf1baa2b2aea5e3400bb12be71c76cd4cda"
+  },
+  {
+    "name": "libchdr.dylib",
+    "bytes": 239680,
+    "sha256": "735a55b0c6ee0e9ee4da7ed469dbff7000f5a8fe86b8f44594718a105b2893af"
+  },
+  {
+    "name": "libzstd.1.dylib",
+    "bytes": 648480,
+    "sha256": "8d1750737459f8d7a2926883185b2b2516213d56709e687edaa27eb8a91ff361"
+  },
+  {
+    "name": "libdeflate.dylib",
+    "bytes": 266704,
+    "sha256": "c9964168295a37f4f75df638e40c55637c9704f47c8d206d3f9ee6bd91262cb3"
+  },
+  {
+    "name": "libSDL3.dylib",
+    "bytes": 2523600,
+    "sha256": "b7cea59c6a4bd4a754ccd11fd1c8778897ffd4ba02b2c17fcf509eab16dcc5d2"
+  },
+  {
+    "name": "libxdelta3.dylib",
+    "bytes": 87872,
+    "sha256": "98f94743aa17374a20afb45abe420b7227f6448a63bf6b4115a8e2a00381f10d"
+  },
+  {
+    "name": "libzstd.dylib",
+    "bytes": 648512,
+    "sha256": "ca6b488a59936efbad194be4a205e42eaaf2848678d7df4cf95083396f3eac00"
+  },
+  {
+    "name": "libFLAC++.dylib",
+    "bytes": 114816,
+    "sha256": "8f15affa95f304b7d5784ba0e9d314ba1dbae83eb7182bfcec39faa503bbf736"
+  },
+  {
+    "name": "libogg.0.dylib",
+    "bytes": 53792,
+    "sha256": "958ef2322e0882c2a4119f69949adf0b1bd064a7f895e46ee9396109fc448219"
+  },
+  {
+    "name": "libFLAC.dylib",
+    "bytes": 257904,
+    "sha256": "1989fa594bc4df54e7f66e8c5a243d1d02e489dddd75a42495169f4cf1705ce2"
+  },
+  {
+    "name": "libzstd.1.5.7.dylib",
+    "bytes": 648480,
+    "sha256": "79a949c711dfdca200d7a6024461dc93d62db61a42d7c24de57e3998d0e002a4"
+  },
+  {
+    "name": "libutf8proc.3.dylib",
+    "bytes": 380256,
+    "sha256": "57e7730cccf5416d073738067e3fb8f8aa07e235d76ebf560b0abbccf09a9660"
+  },
+  {
+    "name": "libutf8proc.dylib",
+    "bytes": 380288,
+    "sha256": "8871ff942dc2bcacaaa324de19309138728fa07c8636d3b7a8f90538055f5d55"
+  }
+]

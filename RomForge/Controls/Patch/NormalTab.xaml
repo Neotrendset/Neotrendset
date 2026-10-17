@@ -1,0 +1,429 @@
+﻿<UserControl x:Class="RomForge.Controls.Patch.NormalTab"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid Margin="5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="0"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="0"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="2"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Border IsEnabled="{Binding IsIdle}" Grid.Column="0" AllowDrop="True" Drop="NormalSourceDrop_Drop" MouseLeftButtonDown="NormalSourceDrop_Click">
+                <Border.Style>
+                    <Style TargetType="Border" BasedOn="{StaticResource DropZone}">
+                        <Setter Property="Height" Value="65"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding PatchVM.NormalVM.IsMultiPatch}" Value="True">
+                                <Setter Property="Height" Value="Auto"/>
+                                <Setter Property="MinHeight" Value="38"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+                <Grid Margin="14,0">
+                    <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Image Grid.Column="0" Source="/Assets/Images/Resource.png" Width="28" Height="28" Margin="0,0,6,0" VerticalAlignment="Center" ToolTip="{Binding PatchVM.NormalVM.SourcePath}"/>
+                        <TextBlock Grid.Column="1" Text="{Binding PatchVM.NormalVM.SourceLabel}" Foreground="#888888" FontSize="12" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" ToolTip="{Binding PatchVM.NormalVM.SourcePath}"/>
+                    </Grid>
+                    <TextBlock Text="원본" Foreground="#888" FontSize="11" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,2,-8,0" ToolTip="{Binding PatchVM.NormalVM.SourcePath}"/>
+                </Grid>
+            </Border>
+            <Grid Grid.Column="2" IsEnabled="{Binding IsIdle}">
+                <Border Height="65" Visibility="{Binding PatchVM.NormalVM.HintsVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Style="{StaticResource DropZone}" AllowDrop="True" Drop="NormalPatchDrop_Drop" MouseLeftButtonDown="NormalPatchDrop_Click">
+                    <Grid Margin="14,0">
+                        <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Image Grid.Column="0" Source="/Assets/Images/Patch.png" Width="28" Height="28" Margin="0,0,6,0" VerticalAlignment="Center" ToolTip="{Binding PatchVM.NormalVM.PatchSlots[0].FilePath}"/>
+                            <TextBlock Grid.Column="1" Text="{Binding PatchVM.NormalVM.PatchSlots[0].Label}" Foreground="#888888" FontSize="12" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" ToolTip="{Binding PatchVM.NormalVM.PatchSlots[0].FilePath}"/>
+                        </Grid>
+                        <TextBlock Text="패치" Foreground="#888" FontSize="11" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,2,-8,0" ToolTip="{Binding PatchVM.NormalVM.PatchSlots[0].FilePath}"/>
+                    </Grid>
+                </Border>
+                <ItemsControl Visibility="{Binding PatchVM.NormalVM.IsMultiPatch, Converter={StaticResource BooleanToVisibilityConverter}}" ItemsSource="{Binding PatchVM.NormalVM.PatchSlots}" Margin="0,0,0,-3">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Style="{StaticResource DropZone}" Height="38" Margin="0,0,0,3" AllowDrop="True" Drop="NormalPatchDrop_Drop" MouseLeftButtonDown="NormalPatchDrop_Click">
+                                <Grid Margin="10,0,36,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Image Grid.Column="0" Source="/Assets/Images/Patch.png" Width="20" Height="20" Margin="0,0,6,0" VerticalAlignment="Center" ToolTip="{Binding FilePath}"/>
+                                        <TextBlock Grid.Column="1" Text="{Binding Label}" Foreground="#888888" FontSize="12" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" ToolTip="{Binding FilePath}"/>
+                                    </Grid>
+                                    <TextBlock Grid.Column="1" Text="{Binding Title}" Foreground="#888" FontSize="11" VerticalAlignment="Center" Margin="8,0,0,0" ToolTip="{Binding FilePath}"/>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <Button Width="26" Height="26" Padding="0" HorizontalAlignment="Right" IsEnabled="{Binding PatchVM.NormalVM.CanAddPatch}" ToolTip="연속으로 적용할 패치 추가" Cursor="Hand" Click="AddPatch_Click">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="border" Background="Transparent">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="border" Property="Opacity" Value="0.8"/>
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="border" Property="Opacity" Value="0.5"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="VerticalAlignment" Value="Bottom"/>
+                            <Setter Property="Margin" Value="0,0,6,6"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding PatchVM.NormalVM.IsMultiPatch}" Value="True">
+                                    <Setter Property="VerticalAlignment" Value="Top"/>
+                                    <Setter Property="Margin" Value="0,6,6,0"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    <Image Source="/Assets/Images/Insert.png" Width="24" Height="24" VerticalAlignment="Center"/>
+                </Button>
+            </Grid>
+        </Grid>
+
+        <Border Grid.Row="2" Visibility="{Binding PatchVM.NormalVM.HasSource, Converter={StaticResource BooleanToVisibilityConverter}}" BorderBrush="#333337" BorderThickness="1" CornerRadius="5" Padding="10,6" Margin="0,5,0,0" VerticalAlignment="Top" MinHeight="30">
+            <StackPanel DataContext="{Binding PatchVM.NormalVM.SourceHash}">
+                <StackPanel.Resources>
+                    <Style x:Key="HashValueBox" TargetType="TextBox">
+                        <Setter Property="IsReadOnly" Value="True"/>
+                        <Setter Property="Padding" Value="0"/>
+                        <Setter Property="BorderThickness" Value="0"/>
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="FontFamily" Value="Consolas"/>
+                        <Setter Property="FontSize" Value="12"/>
+                        <Setter Property="Margin" Value="16,0,0,0"/>
+                        <Setter Property="VerticalAlignment" Value="Center"/>
+                    </Style>
+                    <Style x:Key="HashHeaderText" TargetType="TextBlock">
+                        <Setter Property="Foreground" Value="#888888"/>
+                        <Setter Property="FontSize" Value="11"/>
+                        <Setter Property="FontWeight" Value="Bold"/>
+                    </Style>
+                </StackPanel.Resources>
+                <TextBlock Text="{Binding CalculatingText}" Visibility="{Binding IsCalculating, Converter={StaticResource BooleanToVisibilityConverter}}" Foreground="#888888" FontSize="12" Margin="0,0,0,3"/>
+                <TextBlock Text="패치 시작으로 해시 계산이 취소되었습니다" Visibility="{Binding IsCancelled, Converter={StaticResource BooleanToVisibilityConverter}}" Foreground="#888888" FontSize="12" Margin="0,0,0,3"/>
+                <TextBlock Text="해시 계산 실패" Visibility="{Binding HasError, Converter={StaticResource BooleanToVisibilityConverter}}" Foreground="#E06C75" FontSize="12" Margin="0,0,0,3"/>
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" MaxHeight="130" Visibility="{Binding HasEntries, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <StackPanel Grid.IsSharedSizeScope="True">
+                        <Border BorderBrush="#333337" BorderThickness="0,0,0,1" Padding="0,0,0,3" Margin="0,0,0,3">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" MinWidth="80"/>
+                                    <ColumnDefinition Width="Auto" SharedSizeGroup="ColCrc"/>
+                                    <ColumnDefinition Width="Auto" SharedSizeGroup="ColMd5"/>
+                                    <ColumnDefinition Width="Auto" SharedSizeGroup="ColSha1"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="파일명" Style="{StaticResource HashHeaderText}" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="1" Text="CRC32" Style="{StaticResource HashHeaderText}" Margin="16,0,0,0" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="2" Text="MD5" Style="{StaticResource HashHeaderText}" Margin="16,0,0,0" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="3" Text="SHA-1" Style="{StaticResource HashHeaderText}" Margin="16,0,0,0" HorizontalAlignment="Center"/>
+                            </Grid>
+                        </Border>
+                        <ItemsControl ItemsSource="{Binding Entries}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,1">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" MinWidth="80"/>
+                                            <ColumnDefinition Width="Auto" SharedSizeGroup="ColCrc"/>
+                                            <ColumnDefinition Width="Auto" SharedSizeGroup="ColMd5"/>
+                                            <ColumnDefinition Width="Auto" SharedSizeGroup="ColSha1"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="{Binding Name}" ToolTip="{Binding Name}" Foreground="#E0E0E0" FontSize="12" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
+                                        <TextBox Grid.Column="1" Text="{Binding Crc32, Mode=OneWay}" Foreground="#9ECE6A" Style="{StaticResource HashValueBox}"/>
+                                        <TextBox Grid.Column="2" Text="{Binding Md5, Mode=OneWay}" Foreground="#7AA2F7" Style="{StaticResource HashValueBox}"/>
+                                        <TextBox Grid.Column="3" Text="{Binding Sha1, Mode=OneWay}" Foreground="#E0AF68" Style="{StaticResource HashValueBox}"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </ScrollViewer>
+                <TextBlock Text="{Binding SkippedText}" Visibility="{Binding HasSkipped, Converter={StaticResource BooleanToVisibilityConverter}}" Foreground="#888888" FontSize="11" Margin="0,3,0,0"/>
+            </StackPanel>
+        </Border>
+
+        <Border Grid.Row="2" Visibility="{Binding PatchVM.NormalVM.SourceHintVisible, Converter={StaticResource BooleanToVisibilityConverter}}" BorderBrush="#333337" BorderThickness="1" CornerRadius="5" Padding="8,6" Margin="0,5,0,0" VerticalAlignment="Top" Height="30">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Image Source="/Assets/Images/Resource.png" Width="16" Height="16" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                <TextBlock Text="원본 자동 압축해제 지원 포맷:" Foreground="#888888" FontWeight="Bold" FontSize="14" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                <ItemsControl VerticalAlignment="Center">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal" VerticalAlignment="Center"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.Items>
+                        <Border Background="#1A4D56B2" BorderBrush="#4D4D56B2" BorderThickness="1" CornerRadius="6" Padding="8,3" Margin="3,0">
+                            <TextBlock Text="ZIP" Foreground="#8FA3FF" FontWeight="Bold" FontSize="11" VerticalAlignment="Center">
+                                <TextBlock.Effect>
+                                    <DropShadowEffect BlurRadius="4" ShadowDepth="0" Color="#8FA3FF" Opacity="0.4"/>
+                                </TextBlock.Effect>
+                            </TextBlock>
+                        </Border>
+                        <Border Background="#1A9E5B24" BorderBrush="#559E5B24" BorderThickness="1" CornerRadius="6" Padding="8,3" Margin="3,0">
+                            <TextBlock Text="RAR" Foreground="#FFA254" FontWeight="Bold" FontSize="11" VerticalAlignment="Center">
+                                <TextBlock.Effect>
+                                    <DropShadowEffect BlurRadius="4" ShadowDepth="0" Color="#FFA254" Opacity="0.4"/>
+                                </TextBlock.Effect>
+                            </TextBlock>
+                        </Border>
+                        <Border Background="#1A9E2469" BorderBrush="#559E2469" BorderThickness="1" CornerRadius="6" Padding="8,3" Margin="3,0">
+                            <TextBlock Text="7Z" Foreground="#FF73C9" FontWeight="Bold" FontSize="11" VerticalAlignment="Center">
+                                <TextBlock.Effect>
+                                    <DropShadowEffect BlurRadius="4" ShadowDepth="0" Color="#FF73C9" Opacity="0.4"/>
+                                </TextBlock.Effect>
+                            </TextBlock>
+                        </Border>
+                        <Border Background="#1A1B8A5A" BorderBrush="#551B8A5A" BorderThickness="1" CornerRadius="6" Padding="8,3" Margin="3,0">
+                            <TextBlock Text="CHD" Foreground="#54FFB5" FontWeight="Bold" FontSize="11" VerticalAlignment="Center">
+                                <TextBlock.Effect>
+                                    <DropShadowEffect BlurRadius="4" ShadowDepth="0" Color="#54FFB5" Opacity="0.4"/>
+                                </TextBlock.Effect>
+                            </TextBlock>
+                        </Border>
+                        <Border Background="#1A6C5CE5" BorderBrush="#556C5CE5" BorderThickness="1" CornerRadius="6" Padding="8,3" Margin="3,0">
+                            <TextBlock Text="RVZ" Foreground="#A29BFE" FontWeight="Bold" FontSize="11" VerticalAlignment="Center">
+                                <TextBlock.Effect>
+                                    <DropShadowEffect BlurRadius="4" ShadowDepth="0" Color="#A29BFE" Opacity="0.4"/>
+                                </TextBlock.Effect>
+                            </TextBlock>
+                        </Border>
+                    </ItemsControl.Items>
+                </ItemsControl>
+            </StackPanel>
+        </Border>
+
+        <Border Grid.Row="4" Visibility="{Binding PatchVM.NormalVM.HintsVisible, Converter={StaticResource BooleanToVisibilityConverter}}" BorderBrush="#333337" BorderThickness="1" CornerRadius="5" Padding="8,6" Margin="0,5,0,2" VerticalAlignment="Top" Height="30">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Image Source="/Assets/Images/Patch.png" Width="16" Height="16" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                <TextBlock Text="지원 패치 포맷:" Foreground="#888888" FontWeight="Bold" FontSize="14" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                <ItemsControl VerticalAlignment="Center">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal" VerticalAlignment="Center"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.Items>
+                        <Border Background="#1A4D56B2" BorderBrush="#4D4D56B2" BorderThickness="1" CornerRadius="6" Padding="8,3" Margin="3,0">
+                            <TextBlock Text="IPS" Foreground="#8FA3FF" FontWeight="Bold" FontSize="11" VerticalAlignment="Center">
+                                <TextBlock.Effect>
+                                    <DropShadowEffect BlurRadius="4" ShadowDepth="0" Color="#8FA3FF" Opacity="0.4"/>
+                                </TextBlock.Effect></TextBlock>
+                        </Border>
+                        <Border Background="#1A9E5B24" BorderBrush="#559E5B24" BorderThickness="1" CornerRadius="6" Padding="8,3" Margin="3,0">
+                            <TextBlock Text="BPS" Foreground="#FFA254" FontWeight="Bold" FontSize="11" VerticalAlignment="Center">
+                                <TextBlock.Effect>
+                                    <DropShadowEffect BlurRadius="4" ShadowDepth="0" Color="#FFA254" Opacity="0.4"/>
+                                </TextBlock.Effect></TextBlock>
+                        </Border>
+                        <Border Background="#1A9E2469" BorderBrush="#559E2469" BorderThickness="1" CornerRadius="6" Padding="8,3" Margin="3,0">
+                            <TextBlock Text="UPS" Foreground="#FF73C9" FontWeight="Bold" FontSize="11" VerticalAlignment="Center">
+                                <TextBlock.Effect>
+                                    <DropShadowEffect BlurRadius="4" ShadowDepth="0" Color="#FF73C9" Opacity="0.4"/>
+                                </TextBlock.Effect></TextBlock>
+                        </Border>
+                        <Border Background="#1A1B8A5A" BorderBrush="#551B8A5A" BorderThickness="1" CornerRadius="6" Padding="8,3" Margin="3,0">
+                            <TextBlock Text="PPF" Foreground="#54FFB5" FontWeight="Bold" FontSize="11" VerticalAlignment="Center">
+                                <TextBlock.Effect>
+                                    <DropShadowEffect BlurRadius="4" ShadowDepth="0" Color="#54FFB5" Opacity="0.4"/>
+                                </TextBlock.Effect></TextBlock>
+                        </Border>
+                        <Border Background="#1A6C5CE5" BorderBrush="#556C5CE5" BorderThickness="1" CornerRadius="6" Padding="8,3" Margin="3,0">
+                            <TextBlock Text="APS" Foreground="#A29BFE" FontWeight="Bold" FontSize="11" VerticalAlignment="Center">
+                                <TextBlock.Effect>
+                                    <DropShadowEffect BlurRadius="4" ShadowDepth="0" Color="#A29BFE" Opacity="0.4"/>
+                                </TextBlock.Effect></TextBlock>
+                        </Border>
+                        <Border Background="#1AD48843" BorderBrush="#55D48843" BorderThickness="1" CornerRadius="6" Padding="8,3" Margin="3,0">
+                            <TextBlock Text="Xdelta" Foreground="#D48843" FontWeight="Bold" FontSize="11" VerticalAlignment="Center">
+                                <TextBlock.Effect>
+                                    <DropShadowEffect BlurRadius="4" ShadowDepth="0" Color="#D48843" Opacity="0.4"/>
+                                </TextBlock.Effect></TextBlock>
+                        </Border>
+                        <Border Background="#1AFFCE73" BorderBrush="#4DFFCE73" BorderThickness="1" CornerRadius="6" Padding="8,3" Margin="3,0">
+                            <TextBlock Text="DCP" Foreground="#FFCE73" FontWeight="Bold" FontSize="11" VerticalAlignment="Center">
+                                <TextBlock.Effect>
+                                    <DropShadowEffect BlurRadius="4" ShadowDepth="0" Color="#FFCE73" Opacity="0.4"/>
+                                </TextBlock.Effect></TextBlock>
+                        </Border>
+                    </ItemsControl.Items>
+                </ItemsControl>
+            </StackPanel>
+        </Border>
+
+        <StackPanel Grid.Row="6">
+            <ToggleButton Style="{StaticResource ToggleStyle}" IsChecked="{Binding PatchVM.NormalVM.AutoCompress}" Margin="0,2,0,3" Height="30">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Image Width="18" Margin="0,0,5,0" Source="{Binding PatchVM.NormalVM.AutoCompress, Converter={StaticResource BoolToImageConverter}}" VerticalAlignment="Center"/>
+                    <TextBlock Text="패치 후 자동 압축" VerticalAlignment="Center" Foreground="#FFFFFF" FontWeight="Bold" Margin="0,0,12,0"/>
+                    <Grid VerticalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,16,0">
+                            <Border Background="#1A4D56B2" BorderBrush="#4D4D56B2" BorderThickness="1" CornerRadius="5" Padding="6,2" Margin="0,0,4,0">
+                                <TextBlock Text="BIN / IMG / ISO" Foreground="#8FA3FF" FontWeight="Bold" VerticalAlignment="Center">
+                                    <TextBlock.Effect>
+                                        <DropShadowEffect BlurRadius="4" ShadowDepth="0" Color="#8FA3FF" Opacity="0.4"/>
+                                    </TextBlock.Effect></TextBlock>
+                            </Border>
+                            <TextBlock Text="➔" Foreground="#FF9800" FontWeight="Bold" FontSize="11" VerticalAlignment="Center" Margin="2,0,4,0"/>
+                            <Border Background="#1A1B8A5A" BorderBrush="#551B8A5A" BorderThickness="1" CornerRadius="5" Padding="6,2">
+                                <TextBlock Text="CHD" Foreground="#54FFB5" FontWeight="Bold" VerticalAlignment="Center">
+                                    <TextBlock.Effect>
+                                        <DropShadowEffect BlurRadius="4" ShadowDepth="0" Color="#54FFB5" Opacity="0.4"/>
+                                    </TextBlock.Effect></TextBlock>
+                            </Border>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,16,0">
+                            <Border Background="#1AFFCE73" BorderBrush="#4DFFCE73" BorderThickness="1" CornerRadius="5" Padding="6,2" Margin="0,0,4,0">
+                                <TextBlock Text="3DS / CCI / CIA" Foreground="#FFCE73" FontWeight="Bold" VerticalAlignment="Center">
+                                    <TextBlock.Effect>
+                                        <DropShadowEffect BlurRadius="4" ShadowDepth="0" Color="#FFCE73" Opacity="0.4"/>
+                                    </TextBlock.Effect></TextBlock>
+                            </Border>
+                            <TextBlock Text="➔" Foreground="#FF9800" FontWeight="Bold" FontSize="11" VerticalAlignment="Center" Margin="2,0,4,0"/>
+                            <Border Background="#1AD48843" BorderBrush="#55D48843" BorderThickness="1" CornerRadius="5" Padding="6,2">
+                                <TextBlock Text="ZCCI" Foreground="#D48843" FontWeight="Bold" VerticalAlignment="Center">
+                                    <TextBlock.Effect>
+                                        <DropShadowEffect BlurRadius="4" ShadowDepth="0" Color="#D48843" Opacity="0.4"/>
+                                    </TextBlock.Effect></TextBlock>
+                            </Border>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,16,0">
+                            <Border Background="#1A9E2469" BorderBrush="#559E2469" BorderThickness="1" CornerRadius="5" Padding="6,2" Margin="0,0,4,0">
+                                <TextBlock Text="GCM / Wii / WBFS" Foreground="#FF73C9" FontWeight="Bold" VerticalAlignment="Center">
+                                    <TextBlock.Effect>
+                                        <DropShadowEffect BlurRadius="4" ShadowDepth="0" Color="#FF73C9" Opacity="0.4"/>
+                                    </TextBlock.Effect></TextBlock>
+                            </Border>
+                            <TextBlock Text="➔" Foreground="#FF9800" FontWeight="Bold" FontSize="11" VerticalAlignment="Center" Margin="2,0,4,0"/>
+                            <Border Background="#1A6C5CE5" BorderBrush="#556C5CE5" BorderThickness="1" CornerRadius="5" Padding="6,2">
+                                <TextBlock Text="RVZ" Foreground="#A29BFE" FontWeight="Bold" VerticalAlignment="Center">
+                                    <TextBlock.Effect>
+                                        <DropShadowEffect BlurRadius="4" ShadowDepth="0" Color="#A29BFE" Opacity="0.4"/>
+                                    </TextBlock.Effect></TextBlock>
+                            </Border>
+                        </StackPanel>
+                        <StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Center">
+                            <Border Background="#1A555555" BorderBrush="#4DFFFFFF" BorderThickness="1" CornerRadius="5" Padding="6,2" Margin="0,0,4,0">
+                                <TextBlock Text="이외 기타" Foreground="#CCCCCC" FontWeight="Bold" VerticalAlignment="Center">
+                                    <TextBlock.Effect>
+                                        <DropShadowEffect BlurRadius="4" ShadowDepth="0" Color="#FFFFFF" Opacity="0.2"/>
+                                    </TextBlock.Effect></TextBlock>
+                            </Border>
+                            <TextBlock Text="➔" Foreground="#FF9800" FontWeight="Bold" FontSize="11" VerticalAlignment="Center" Margin="2,0,4,0"/>
+                            <Border Background="#1A4D56B2" BorderBrush="#4D4D56B2" BorderThickness="1" CornerRadius="5" Padding="6,2">
+                                <TextBlock Text="ZIP" Foreground="#8FA3FF" FontWeight="Bold" VerticalAlignment="Center">
+                                    <TextBlock.Effect>
+                                        <DropShadowEffect BlurRadius="4" ShadowDepth="0" Color="#8FA3FF" Opacity="0.4"/>
+                                    </TextBlock.Effect></TextBlock>
+                            </Border>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </ToggleButton>
+
+            <StackPanel Background="Transparent">                
+                <ToggleButton Style="{StaticResource ToggleStyle}" IsChecked="{Binding PatchVM.NormalVM.NamingEnabled}" Margin="0,2,0,2" Height="30">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <Image Width="18" Margin="0,0,5,0" Source="{Binding PatchVM.NormalVM.NamingEnabled, Converter={StaticResource BoolToImageConverter}}" VerticalAlignment="Center"/>
+                        <TextBlock Text="결과 파일명에 버전/날짜 자동 표기" VerticalAlignment="Center" Foreground="#FFFFFF" FontWeight="Bold" Margin="0,0,12,0"/>
+                        <TextBlock Text="패치 파일명에서 버전과 날짜를 읽어와 결과 파일명에 표시합니다" VerticalAlignment="Center" Foreground="#888888" FontSize="11"/>
+                    </StackPanel>
+                </ToggleButton>
+                <StackPanel Visibility="{Binding  PatchVM.NormalVM.NamingEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <StackPanel>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid Grid.Column="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBox Grid.Column="0" Text="{Binding PatchVM.NormalVM.NamingFormat, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding PatchVM.NormalVM.NamingEnabled}" ToolTip="사용 가능한 값: {fileName}, {Version}, {Date:yyMMdd}" Height="30" FontSize="12" VerticalContentAlignment="Center" Margin="0,0,4,0"/>
+                                <Button Grid.Column="1" Style="{StaticResource GrayButton}" Width="80" Height="30" Padding="0" IsEnabled="{Binding PatchVM.NormalVM.NamingEnabled}" Click="ResetNamingFormat_Click">
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <Image Source="/Assets/Images/Clear.png" Width="18" Height="18" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                        <TextBlock Text="초기화" FontSize="11" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
+                            </Grid>
+                        </Grid>
+                    </StackPanel>
+                    <Border Background="#12FFFFFF" BorderBrush="#30FFFFFF" BorderThickness="1" CornerRadius="8" Padding="10,8" Margin="0,2,0,3">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="예상 파일명: " Foreground="#4CAF50" FontSize="11" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" ToolTip="{Binding PatchVM.NormalVM.NamingPreview}"/>
+                            <TextBlock Text="{Binding PatchVM.NormalVM.NamingPreview}" Foreground="#4CAF50" FontSize="11" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" ToolTip="{Binding PatchVM.NormalVM.NamingPreview}"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
+        <Border Grid.Row="7" Background="#12FFFFFF" BorderBrush="#30FFFFFF" BorderThickness="0,1,0,0" CornerRadius="8" Margin="0,2,0,0" Padding="8,0">
+            <Grid x:Name="progressArea" Height="28">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="140"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" x:Name="progressLabel" Text="{Binding PatchVM.NormalVM.ProgressLabel}" Foreground="#A0A0A0" FontSize="11" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                <TextBlock Grid.Column="1" x:Name="progressPercent" Margin="0,0,10,0" Text="{Binding PatchVM.NormalVM.ProgressPercent}" Foreground="#4CAF50" FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="2" x:Name="progressSpeed" Margin="0,0,10,0" Text="{Binding PatchVM.NormalVM.ProgressSpeed}" Foreground="Gray" FontSize="11" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="3" x:Name="progressTime" Margin="0,0,10,0" Text="{Binding PatchVM.NormalVM.ProgressTime}" Foreground="#4CAF50" FontSize="11" VerticalAlignment="Center"/>
+                <Grid Grid.Column="4" Height="10" VerticalAlignment="Center">
+                    <Border Background="#25FFFFFF" CornerRadius="5"/>
+                    <Border x:Name="barTrack" CornerRadius="5" ClipToBounds="True">
+                        <Border Background="#4CAF50" CornerRadius="5" HorizontalAlignment="Left">
+                            <Border.Width>
+                                <MultiBinding Converter="{StaticResource ProgressToWidthConverter}">
+                                    <Binding Path="ActualWidth" ElementName="barTrack"/>
+                                    <Binding Path="PatchVM.NormalVM.ProgressPct"/>
+                                </MultiBinding>
+                            </Border.Width>
+                        </Border>
+                    </Border>
+                </Grid>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

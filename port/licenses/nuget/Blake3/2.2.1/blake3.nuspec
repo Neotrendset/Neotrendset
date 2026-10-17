@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>Blake3</id>
+    <version>2.2.1</version>
+    <authors>Alexandre Mutel</authors>
+    <license type="expression">BSD-2-Clause</license>
+    <licenseUrl>https://licenses.nuget.org/BSD-2-Clause</licenseUrl>
+    <icon>logo.png</icon>
+    <projectUrl>https://github.com/xoofx/Blake3.NET</projectUrl>
+    <description>Blake3.NET is a managed wrapper around the Rust implementations of the BLAKE3 cryptographic hash function.</description>
+    <releaseNotes>https://github.com/xoofx/Blake3.NET/releases/tag/2.2.1</releaseNotes>
+    <copyright>Alexandre Mutel</copyright>
+    <tags>Blake3 Hash Cryptography SIMD</tags>
+    <repository type="git" url="https://github.com/xoofx/Blake3.NET" commit="d27b9f55fa9a8e0fe3a737130da1465534085196" />
+    <dependencies>
+      <group targetFramework="net8.0" />
+    </dependencies>
+  </metadata>
+</package>

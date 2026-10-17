@@ -1,0 +1,29 @@
+<SOURCE>/port/InspectorTests/Program.cs(44,15): warning CS8602: null 가능 참조에 대한 역참조입니다. [<SOURCE>/port/InspectorTests/InspectorTests.csproj]
+<SOURCE>/port/InspectorTests/Program.cs(79,24): warning CS8602: null 가능 참조에 대한 역참조입니다. [<SOURCE>/port/InspectorTests/InspectorTests.csproj]
+PASS NCCH identifiers, byte regions, ten ExeFS slots and reversed hashes
+PASS NCCH media unit exponent changes all relative regions
+PASS encrypted ExeFS is never parsed as plaintext
+PASS NCSD keeps eight slots, including slot seven, with absolute NCCH offsets
+PASS trimmed NCSD padding produces warning but preserves bounded partitions
+PASS NCSD overlapping partitions are errors
+PASS NCSD partition outside the file is not dereferenced
+PASS NCSD partition may not read outside parent even when file has bytes
+PASS CIA unaligned sizes use 64-byte section alignment
+PASS CIA optional zero Meta may start after EOF padding
+PASS CIA missing Content Index is rejected
+PASS CIA content outside file is rejected
+PASS CIA hostile uint64 sizes yield serializable diagnostics
+PASS NCCH hostile exponent and media sums yield diagnostics
+PASS NCCH region outside declared NCCH is rejected even inside file
+PASS NCCH ExeFS and RomFS overlap is rejected
+PASS ExeFS entry cannot point outside ExeFS
+PASS ExeFS duplicate/overlapping entries are rejected
+PASS raw ExeFS file supports ten entries without NCCH
+PASS unknown extension cannot override a recognized header
+PASS zero/short files and partial NCCH headers are rejected
+PASS inspection with hash leaves original bytes and modification time unchanged
+PASS JSON export is parseable and includes matching SHA-256
+PASS JSON export refuses existing source, report, and symlink targets
+PASS cancellation does not publish partial JSON
+PASS bounded parser handles 1200 deterministic mutated headers and JSON formatting
+PASS 26 tests
